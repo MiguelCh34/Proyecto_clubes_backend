@@ -1,0 +1,18 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Entorno virtual
+venv/
+.env
+
+# Flask / cache
+instance/
+.mypy_cache/
+.pytest_cache/
+.cache/
+
+# VSCode
+.vscode/
