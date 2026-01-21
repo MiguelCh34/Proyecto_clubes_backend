@@ -8,7 +8,7 @@ from flask_jwt_extended import (
 from werkzeug.security import generate_password_hash, check_password_hash
 from utils.decorators import admin_required
 
-from database.models import db, Usuario, Persona, Rol
+from database.models import db, Usuario, Persona, Roles
 
 auth_bp = Blueprint("auth_bp", __name__)
 
@@ -43,19 +43,20 @@ def register():
     db.session.add(nuevo_usuario)
     db.session.flush()  # Para obtener el ID antes del commit
 
-    # Obtener el rol "Usuario" de la tabla Rol
-    rol_usuario = Rol.query.filter_by(nombre_rol='Usuario').first()
+    # Obtener el rol "Usuario" de la tabla Roles
+    rol_usuario = Roles.query.filter_by(Nombre_Rol='Usuario').first()
     if not rol_usuario:
-        rol_usuario = Rol.query.get(2)  # Fallback al ID 2
+        rol_usuario = Roles.query.get(2)  # Fallback al ID 2
 
     # Crear persona asociada
     nueva_persona = Persona(
-        id_usuario=nuevo_usuario.ID_Usuario,
-        nombre=nombre,
-        apellido=apellido,
-        correo_electronico=email,
-        celular=celular,
-        id_rol=rol_usuario.id_rol if rol_usuario else 2
+        ID_Usuario=nuevo_usuario.ID_Usuario,
+        Nombre=nombre,
+        Apellido=apellido,
+        Correo_institucional=email,
+        Telefono=celular,
+        ID_Rol=rol_usuario.ID_Roles if rol_usuario else 2,
+        ID_Estado=1  # Estado activo por defecto
     )
     
     db.session.add(nueva_persona)
