@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
-from .. import db   # IMPORTACIÓN CORRECTA DESDE EL PAQUETE
-from ..utils.jwt_middleware import jwt_required
+from database.models import db
+from utils.jwt_middleware import jwt_required
 
 
 def create_crud(model, model_name):

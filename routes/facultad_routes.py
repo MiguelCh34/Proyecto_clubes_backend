@@ -1,9 +1,7 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required
-
-# Import correcto dentro del paquete
-from .. import db
-from ..database.models import Facultad
+from utils.decorators import admin_required
+from database.models import db, Facultad
 
 facultad_bp = Blueprint("facultad_bp", __name__)
 
@@ -26,6 +24,7 @@ def listar_facultades():
 # ================================
 @facultad_bp.post("/crear_facultad")
 @jwt_required()
+@admin_required
 def crear_facultad():
     data = request.get_json() or {}
     nombre = data.get("Nombre")
@@ -64,6 +63,7 @@ def obtener_facultad(id):
 # ================================
 @facultad_bp.put("/actualizar_facultad/<int:id>")
 @jwt_required()
+@admin_required
 def actualizar_facultad(id):
     f = Facultad.query.get_or_404(id)
     data = request.get_json() or {}
@@ -82,6 +82,7 @@ def actualizar_facultad(id):
 # ================================
 @facultad_bp.delete("/eliminar_facultad/<int:id>")
 @jwt_required()
+@admin_required
 def eliminar_facultad(id):
     f = Facultad.query.get_or_404(id)
 

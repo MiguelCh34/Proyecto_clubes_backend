@@ -1,9 +1,10 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required
+from flask import Blueprint, request, jsonify
+from flask_jwt_extended import jwt_required
+from utils.decorators import admin_required  # ← Cambiado
+from database.models import db, ActividadesRealizadas, Persona, Actividad, Roles, Estado  # ← Cambiado
 
-# Correcto para imports dentro del paquete
-from .. import db
-from ..database.models import ActividadesRealizadas, Persona, Actividad, Roles, Estado
 
 participacion_bp = Blueprint("participacion_bp", __name__)
 
@@ -27,12 +28,12 @@ def listar_participaciones():
     ]), 200
 
 
-
 # ================================
 #  CREAR PARTICIPACIÓN
 # ================================
 @participacion_bp.post("/crear_participacion")
 @jwt_required()
+@admin_required
 def crear_participacion():
     data = request.get_json() or {}
 
@@ -74,7 +75,6 @@ def crear_participacion():
     return jsonify({"message": "Participación creada", "ID_Participacion": nueva.ID_Participacion}), 201
 
 
-
 # ================================
 #  OBTENER PARTICIPACIÓN
 # ================================
@@ -91,12 +91,12 @@ def obtener_participacion(id):
     }), 200
 
 
-
 # ================================
 #  ACTUALIZAR PARTICIPACIÓN
 # ================================
 @participacion_bp.put("/actualizar_participacion/<int:id>")
 @jwt_required()
+@admin_required
 def actualizar_participacion(id):
     p = ActividadesRealizadas.query.get_or_404(id)
     data = request.get_json() or {}
@@ -109,14 +109,14 @@ def actualizar_participacion(id):
     return jsonify({"message": "Participación actualizada correctamente"}), 200
 
 
-
 # ================================
 #  ELIMINAR PARTICIPACIÓN
 # ================================
 @participacion_bp.delete("/eliminar_participacion/<int:id>")
 @jwt_required()
+@admin_required
 def eliminar_participacion(id):
     p = ActividadesRealizadas.query.get_or_404(id)
     db.session.delete(p)
     db.session.commit()
-    return jsonify({"message": "Participación eliminada exitosamente"}), 200
+    return jsonify({"message": "Participación eliminada correctamente"}), 200

@@ -1,7 +1,8 @@
 from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
-from .. import db
+from flask_sqlalchemy import SQLAlchemy
 
+db = SQLAlchemy()
 
 # ============================================================
 #                       TABLA: SEDE
@@ -69,6 +70,7 @@ class Usuario(db.Model):
     nombre = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(120), nullable=False, unique=True)
     password_hash = db.Column(db.String(255), nullable=False)
+    rol = db.Column(db.String(20), default='usuario')  # ← AGREGAR ESTA LÍNEA
 
     clubes = db.relationship("Club", back_populates="usuario")
     personas = db.relationship("Persona", back_populates="usuario")
@@ -138,9 +140,11 @@ class Persona(db.Model):
     Edad = db.Column(db.Integer)
     Cedula = db.Column(db.String(20), unique=True)
     Telefono = db.Column(db.String(20))
+    Foto_Perfil = db.Column('foto_perfil', db.String(500))  # ← Correcto
 
     ID_Estado = db.Column(db.Integer, db.ForeignKey("estado.ID_Estado"), nullable=False)
     ID_Usuario = db.Column(db.Integer, db.ForeignKey("usuario.ID_Usuario"), nullable=False)
+    ID_Rol = db.Column(db.Integer)
 
     estado = db.relationship("Estado", back_populates="personas")
     usuario = db.relationship("Usuario", back_populates="personas")

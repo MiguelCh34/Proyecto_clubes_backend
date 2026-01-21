@@ -1,13 +1,13 @@
 # backend_clubes/routes/usuario_routes.py
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from ..database.models import Usuario
-from ..services.usuario_service import (
+from utils.decorators import admin_required
+from database.models import db, Usuario
+from services.usuario_service import (
     listar_usuarios as svc_listar,
     obtener_usuario as svc_obtener,
     actualizar_usuario as svc_actualizar,
 )
-from .. import db
 
 usuario_bp = Blueprint("usuario_bp", __name__)
 
@@ -47,3 +47,32 @@ def eliminar_usuario(id):
     db.session.delete(u)
     db.session.commit()
     return jsonify({"message": "Usuario eliminado"})
+
+# ================================
+#  CAMBIAR CONTRASEÑA
+# ================================
+@usuario_bp.put("/cambiar_contrasena")
+@jwt_required()
+def cambiar_contrasena():
+    """Permite al usuario cambiar su contraseña"""
+    from werkzeug.security import check_password_hash, generate_password_hash
+    
+    current_user_id = get_jwt_identity()
+    data = request.get_json() or {}
+    
+    if not all(k in data for k in ['contrasena_actual', 'contrasena_nueva']):
+        return jsonify({"error": "Faltan campos obligatorios"}), 400
+    
+    usuario = Usuario.query.get(current_user_id)
+    if not usuario:
+        return jsonify({"error": "Usuario no encontrado"}), 404
+    
+    # Verificar contraseña actual
+    if not check_password_hash(usuario.Contrasena, data['contrasena_actual']):
+        return jsonify({"error": "La contraseña actual es incorrecta"}), 400
+    
+    # Actualizar contraseña
+    usuario.Contrasena = generate_password_hash(data['contrasena_nueva'])
+    db.session.commit()
+    
+    return jsonify({"message": "Contraseña actualizada exitosamente"}), 200

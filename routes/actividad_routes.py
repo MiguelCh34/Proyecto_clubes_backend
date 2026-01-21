@@ -1,11 +1,8 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required
+from utils.decorators import admin_required
 from datetime import datetime
-
-# 👇 Importaciones correctas dentro del paquete
-from .. import db
-from ..database.models import Actividad, Club, Estado, Usuario
-
+from database.models import db, Actividad, Club, Estado, Usuario
 
 actividad_bp = Blueprint("actividad_bp", __name__)
 
@@ -37,6 +34,7 @@ def listar_actividades():
 # ================================
 @actividad_bp.post("/crear_actividad")
 @jwt_required()
+@admin_required
 def crear_actividad():
     data = request.get_json() or {}
 
@@ -97,6 +95,7 @@ def obtener_actividad(id):
 # ================================
 @actividad_bp.put("/actualizar_actividad/<int:id>")
 @jwt_required()
+@admin_required
 def actualizar_actividad(id):
     a = Actividad.query.get_or_404(id)
     data = request.get_json() or {}
@@ -121,6 +120,7 @@ def actualizar_actividad(id):
 # ================================
 @actividad_bp.delete("/eliminar_actividad/<int:id>")
 @jwt_required()
+@admin_required
 def eliminar_actividad(id):
     a = Actividad.query.get_or_404(id)
     db.session.delete(a)

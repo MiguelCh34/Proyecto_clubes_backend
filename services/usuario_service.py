@@ -1,6 +1,5 @@
 # backend_clubes/services/usuario_service.py
-from .. import db
-from ..database.models import Usuario
+from database.models import db, Usuario  # ← Cambiado
 
 def listar_usuarios():
     return Usuario.query.all()
